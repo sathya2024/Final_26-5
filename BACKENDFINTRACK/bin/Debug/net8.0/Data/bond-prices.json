@@ -1,0 +1,11 @@
+[
+  { "FixedIncomeName": "U.S. Treasury 10-Year Note", "CurrentPrice": 99.45 },
+  { "FixedIncomeName": "Apple Inc. Corporate Bond 2030", "CurrentPrice": 102.36 },
+  { "FixedIncomeName": "Vanguard Intermediate-Term Investment Grade Fund", "CurrentPrice": 75.12 },
+  { "FixedIncomeName": "iShares iBoxx $ Investment Grade Corporate Bond ETF (LQD)", "CurrentPrice": 108.27 },
+  { "FixedIncomeName": "U.S. Treasury Inflation-Protected Securities (TIPS) 5-Year", "CurrentPrice": 96.88 },
+  { "FixedIncomeName": "Microsoft Corp. Corporate Bond 2028", "CurrentPrice": 101.02 },
+  { "FixedIncomeName": "SPDR Bloomberg High Yield Bond ETF (JNK)", "CurrentPrice": 94.33 },
+  { "FixedIncomeName": "Tesla Inc. Green Bond 2031", "CurrentPrice": 98.75 }
+]
+ 

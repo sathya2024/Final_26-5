@@ -1,0 +1,42 @@
+[
+  {
+    "userId": 0,
+    "Name": "shamitha",
+    "Email": "shamitha@gmail.com",
+    "UserName": "shamitha",
+    "Password": "shamitha924",
+    "ConfirmPassword": "shamitha924",
+    "SecurityQuestion": "What is your pet\u0027s name?",
+    "SecurityAnswer": "yeontan"
+  },
+  {
+    "userId": 2,
+    "Name": "shamitha",
+    "Email": "shamitha1@gmail.com",
+    "UserName": "shamitha",
+    "Password": "shamitha924",
+    "ConfirmPassword": "shamitha924",
+    "SecurityQuestion": "What is your pet\u0027s name?",
+    "SecurityAnswer": "yeontan"
+  },
+  {
+    "userId": 3,
+    "Name": "sathya",
+    "Email": "sathya@gmail.com",
+    "UserName": "sathyasaisri",
+    "Password": "$2a$11$9BG8nGDpuVYkqKaR7hr1wezcAeaVLx0zwVvhdLCUWRVE8XkH6WSg.",
+    "ConfirmPassword": "",
+    "SecurityQuestion": "What is your favorite book?",
+    "SecurityAnswer": "twisted"
+  },
+  {
+    "userId": 4,
+    "Name": "Shama S K",
+    "Email": "shamask743@gmail.com",
+    "UserName": "shamask",
+    "Password": "$2a$11$G9KM/a569FCKGkCHYjiX6O5x1BcM0//7eYiNkwkrcIjUJmQ.Raeb6",
+    "ConfirmPassword": "",
+    "SecurityQuestion": "What is your favorite book?",
+    "SecurityAnswer": "silent patient"
+  }
+]
