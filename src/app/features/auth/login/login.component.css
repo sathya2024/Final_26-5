@@ -1,0 +1,47 @@
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: auto;
+}
+ 
+label {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+ 
+button {
+  margin-top: 10px;
+}
+ 
+/* New styles from removed inline CSS */
+.login-image {
+  max-height: 500px;
+  border-radius: 3%;
+}
+ 
+.login-logo {
+  height: 90px;
+}
+ 
+.login-card {
+  padding: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  max-width: 490px;
+  width: 100%;
+  margin: auto;
+  margin-bottom: 85px;
+}
+ 
+.login-title {
+  color: #004c6a;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+}
+ 
+.login-button {
+  width: 100px;
+}
+ 
+ 

@@ -1,0 +1,258 @@
+/* Form Container */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #ffffff;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    max-height: 70vh;
+    max-width: 540px;
+    margin: auto;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Form Grid Layout */
+.form-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* Form Group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 calc(50% - 16px);
+    min-width: 180px;
+    margin-bottom: 0;
+}
+
+/* Labels */
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Inputs and Selects */
+input,
+select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    margin-bottom: 0;
+}
+
+input:focus,
+select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.15);
+}
+
+/* Stock Search Component */
+app-stock-search {
+    display: block;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* Sell Fields Section */
+.form-sell-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
+    margin-top: 8px;
+    border-top: 1px solid #eee;
+    padding-top: 8px;
+}
+
+/* Error Messages */
+.error {
+    color: #dc3545;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+    width: 100%;
+}
+
+/* Buttons */
+button {
+    padding: 8px 16px;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button[type="submit"] {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+button[type="button"] {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+button[type="button"]:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+/* Center the Form Vertically and Horizontally */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f8f9fa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    form {
+        max-width: 98vw;
+        padding: 8px;
+    }
+    .form-grid,
+    .form-sell-fields {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .form-group {
+        min-width: 100px;
+        flex: 1 1 100%;
+    }
+    button {
+        font-size: 12px;
+        padding: 7px 12px;
+    }
+    .form-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+.sell-prompt-modal,
+.sell-fields-modal {
+  position: fixed;
+  z-index: 2000;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 5px rgba(0,0,0,0.10);
+  min-width: 340px;
+  max-width: 95vw;
+  padding: 2.5rem 2rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.sell-prompt-modal p {
+  font-size: 1.08rem;
+  color: #222;
+  text-align: center;
+  margin-bottom: 1.2rem;
+  margin-top: 0;
+  line-height: 1.6;
+}
+
+.sell-prompt-modal button,
+.sell-fields-modal button {
+  min-width: 120px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+  margin: 0 0.5rem;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.sell-prompt-modal button[type="button"]:first-child {
+  background: #28a745;
+}
+.sell-prompt-modal button[type="button"]:last-child {
+  background: #dc3545;
+}
+
+.sell-prompt-modal button:hover,
+.sell-fields-modal button:hover {
+  background: #0056b3;
+  transform: translateY(-2px) scale(1.04);
+}
+
+.sell-fields-modal label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  margin-top: 0.8rem;
+  display: block;
+  color: #333;
+}
+
+.sell-fields-modal input[type="date"],
+.sell-fields-modal input[type="number"] {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 0.7rem;
+}
+
+.sell-fields-modal .error {
+  color: #dc3545;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  margin-top: -0.4rem;
+  text-align: left;
+}
+
+@media (max-width: 600px) {
+  .sell-prompt-modal,
+  .sell-fields-modal {
+    min-width: 88vw;
+    padding: 1.2rem 0.8rem 1rem 0.8rem;
+  }
+  .sell-prompt-modal p {
+    font-size: 0.99rem;
+  }
+  .sell-prompt-modal button,
+  .sell-fields-modal button {
+    font-size: 0.93rem;
+    min-width: 90px;
+    padding: 0.5rem 0.7rem;
+  }
+}

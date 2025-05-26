@@ -1,0 +1,135 @@
+<div class="container mt-1 register-container">
+  <div class="row justify-content-center align-items-center h-100">
+ 
+    <!-- Left Side: Image -->
+    <div class="col-lg-6 d-none d-lg-block text-center">
+      <img [src]="imagePath" alt="Register Illustration" class="img-fluid register-image" />
+    </div>
+ 
+    <!-- Right Side: Register Form -->
+    <div class="col-lg-5">
+      <div class="text-center mb-4">
+        <img [src]="logoPath" alt="FINTRACK" height="90" class="me-0" />
+      </div>
+ 
+      <div class="card register-card">
+        <h4 class="text-center mb-3 register-heading">REGISTER</h4>
+ 
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+ 
+          <!-- Name -->
+          <div class="mb-2">
+            <label for="name" class="form-label">Name</label>
+            <input id="name" formControlName="name" type="text" class="form-control" />
+            <div class="text-danger" *ngIf="f['name'].touched && f['name'].invalid">
+              <div *ngIf="f['name'].errors?.['required']">Name is required.</div>
+              <div *ngIf="f['name'].errors?.['pattern']">Name format is invalid.</div>
+            </div>
+          </div>
+ 
+          <!-- Email -->
+          <!-- Email -->
+<div class="mb-2">
+  <label for="email" class="form-label">Email</label>
+  <div class="input-group">
+    <input id="email" formControlName="email" type="email" class="form-control" />
+    <button type="button" class="btn btn-outline-secondary" (click)="sendVerificationCode()">Send Code</button>
+  </div>
+  <div class="text-danger" *ngIf="f['email'].touched && f['email'].invalid">
+    <div *ngIf="f['email'].errors?.['required']">Email is required.</div>
+    <div *ngIf="f['email'].errors?.['pattern']">Invalid email format.</div>
+  </div>
+ 
+  <!-- Verification Code Input -->
+  <div *ngIf="verificationSent && !emailVerified" class="mt-2">
+    <label for="codeInput" class="form-label">Enter Verification Code</label>
+    <input id="codeInput" type="text" class="form-control" formControlName="verificationCode" />
+    <button class="btn btn-sm btn-success mt-2" type="button" (click)="verifyEmailCode()" [disabled]="isVerifying">
+      {{ isVerifying ? 'Verifying...' : 'Verify Code' }}
+    </button>
+  </div>
+ 
+  <!-- Success Message -->
+  <div *ngIf="emailVerified" class="text-success mt-1">Email verified ✔</div>
+</div>
+ 
+<!-- Error Message -->
+<div *ngIf="errorMessage" class="text-danger mb-2">
+  {{ errorMessage }}
+</div>
+          <!-- Username -->
+          <div class="mb-2">
+            <label for="username" class="form-label">Username</label>
+            <input id="username" formControlName="UserName" type="text" class="form-control" />
+            <div class="text-danger" *ngIf="f['UserName'].touched && f['UserName'].invalid">
+              <div *ngIf="f['UserName'].errors?.['required']">Username is required.</div>
+              <div *ngIf="f['UserName'].errors?.['pattern']">Username format is invalid.</div>
+            </div>
+          </div>
+ 
+          <!-- Password -->
+          <div class="mb-2">
+            <label for="password" class="form-label">Password</label>
+            <input id="password" formControlName="password" type="password" class="form-control" />
+            <div class="text-danger" *ngIf="f['password'].touched && f['password'].invalid">
+              <div *ngIf="f['password'].errors?.['required']">Password is required.</div>
+              <div *ngIf="f['password'].errors?.['minlength']">Minimum 6 characters required.</div>
+              <div *ngIf="f['password'].errors?.['pattern']">Password format is invalid.</div>
+            </div>
+ 
+            <div class="mt-2">
+              <div class="progress strength-meter">
+                <div class="progress-bar" role="progressbar" [ngClass]="getStrengthClass()" [style.width.%]="passwordStrength"></div>
+              </div>
+              <small [ngClass]="getStrengthTextClass()">Strength: {{ getStrengthLabel() }}</small>
+            </div>
+          </div>
+ 
+          <!-- Confirm Password -->
+          <div class="mb-2">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input id="confirmPassword" formControlName="confirmPassword" type="password" class="form-control" />
+            <div class="text-danger" *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid">
+              <div *ngIf="f['confirmPassword'].errors?.['required']">Confirmation is required.</div>
+              <div *ngIf="f['confirmPassword'].errors?.['minlength']">Minimum 6 characters required.</div>
+              <div *ngIf="f['confirmPassword'].errors?.['pattern']">Password format is invalid.</div>
+            </div>
+            <div class="text-danger" *ngIf="signupForm.errors?.['mismatch'] && (f['confirmPassword'].touched || submitted)">
+              Passwords do not match.
+            </div>
+          </div>
+ 
+          <!-- Security Question -->
+          <div class="mb-2">
+            <label for="securityQuestion" class="form-label">Security Question</label>
+            <select id="securityQuestion" formControlName="securityQuestion" class="form-select">
+              <option value="">--Select a question--</option>
+              <option *ngFor="let question of securityQuestions" [value]="question">{{ question }}</option>
+            </select>
+            <div class="text-danger" *ngIf="f['securityQuestion'].touched && f['securityQuestion'].invalid">
+              <div *ngIf="f['securityQuestion'].errors?.['required']">Security question is required.</div>
+            </div>
+          </div>
+ 
+          <!-- Security Answer -->
+          <div class="mb-3">
+            <label for="securityAnswer" class="form-label">Security Answer</label>
+            <input id="securityAnswer" formControlName="securityAnswer" type="text" class="form-control" />
+            <div class="text-danger" *ngIf="f['securityAnswer'].touched && f['securityAnswer'].invalid">
+              <div *ngIf="f['securityAnswer'].errors?.['required']">Security answer is required.</div>
+            </div>
+          </div>
+ 
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+          <div class="text-center mt-3">
+            <span>Already have an account?</span>
+            <a routerLink="/login" class="text-decoration-none text-primary fw-semibold">Login</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+ 

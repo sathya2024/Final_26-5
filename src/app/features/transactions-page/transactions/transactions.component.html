@@ -1,0 +1,189 @@
+<div class="transactions-container">
+  <!-- Top Header -->
+  <header class="fintrack-header">
+    <div class="header-left">
+      <img
+        src="assets/images/logo2.png"
+        alt="FinTrack Logo"
+        class="fintrack-logo"
+      />
+    </div>
+    <div class="header-right">
+      <img
+      src="assets/images/mphasis_logo.png"
+      alt="FinTrack Logo"
+      class="fintrack-logo logo-main"
+    />
+      <div class="user-initial">{{ userInitial }}</div>
+    </div>
+  </header>
+ 
+  <main class="fintrack-main">
+   <div class="nav-buttons">
+      <button class="nav-btn" (click)="goToDashboard()">Dashboard</button>
+      <button class="nav-btn" (click)="goToHoldings()">Holdings</button>
+      <button class="nav-btn" (click)="goToTransactions()">Transactions</button>
+    </div>
+ 
+    <h2>Recent Transactions</h2>
+    <table class="transaction-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Transaction Type</th>
+          <th>Date</th>
+          <th>Price</th>
+          <th>Units/Shares</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let txn of recentTransactions">
+          <td>{{ txn.name }}</td>
+          <td>{{ txn.type }}</td>
+          <td>{{ txn.transactionType }}</td>
+          <td>{{ txn.date | date: 'dd-MM-yyyy'}}</td>
+          <td>{{ txn.amount }}</td>
+          <td>{{ txn.units }}</td>
+        </tr>
+      </tbody>
+    </table>
+ 
+    <!-- filters card -->
+    <div class="card filters-card">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>From Date</label>
+          <input type="date" [(ngModel)]="fromDate" class="form-input" />
+        </div>
+        <div class="filter-group">
+          <label>To Date</label>
+          <input type="date" [(ngModel)]="toDate" class="form-input" />
+        </div>
+        <div class="filter-group">
+          <label>Transaction Type</label>
+          <select [(ngModel)]="selectedType" class="form-input">
+            <option value="all">All Types</option>
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+           
+          </select>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="search-group">
+          <div class="search-input-container">
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              placeholder="Search by name..."
+              class="search-input"
+            />
+          </div>
+          <button (click)="applyFilters()" class="search-button">
+            Search
+          </button>
+          <button (click)="clearFilters()" class="clear-button">
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+   
+ 
+    <div class="transactions-header">
+      <h2>All Transactions</h2>
+      <a class="tab-link export-btn" (click)="exportToExcel()">
+        <i class="fas fa-file-excel"></i> Export to Excel
+      </a>
+    </div>
+    <table class="transaction-table">
+      <thead>
+        <tr>
+          <th (click)="sortTransactions('name')">
+            Name
+            <span *ngIf="sortColumn === 'name'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th (click)="sortTransactions('type')">
+            Type
+            <span *ngIf="sortColumn === 'type'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th (click)="sortTransactions('transactionType')">
+            Transaction Type
+            <span *ngIf="sortColumn === 'transactionType'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th (click)="sortTransactions('date')">
+            Date
+            <span *ngIf="sortColumn === 'date'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th (click)="sortTransactions('amount')">
+            Purchase Price
+            <span *ngIf="sortColumn === 'amount'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th (click)="sortTransactions('units')">
+            Units/Shares
+            <span *ngIf="sortColumn === 'units'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let txn of filteredTransactions | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }; let i = index">
+ 
+          <td class="clickable" (click)="onSymbolClick(txn)">{{ txn.name }}</td>
+ 
+ 
+ 
+          <td>{{ txn.type }}</td>
+          <td>{{ txn.transactionType }}</td>
+          <td>{{ txn.date | date: 'dd-MM-yyyy'}}</td>
+          <td>{{ txn.amount }}</td>
+          <td>{{ txn.units }}</td>
+        </tr>
+      </tbody>
+    </table>
+   
+ 
+   
+   
+    <div class="pagination-container">
+      <div class="items-per-page">
+        <label>
+          Rows per page:
+          <select [(ngModel)]="itemsPerPage" class="items-select">
+            <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+          </select>
+        </label>
+      </div>
+     
+      <div class="pagination-controls">
+        <pagination-controls
+          (pageChange)="currentPage = $event"
+          [autoHide]="true"
+          class="custom-pagination">
+        </pagination-controls>
+      </div>
+     
+  <div class="page-info">
+    {{ getPageInfo() }}
+  </div>
+    </div>  
+   
+    <div class="modal" *ngIf="selectedQuote">
+      <h3>Quote for {{ selectedQuote.symbol }}</h3>
+   
+      <div *ngIf="isQuoteLoading">Loading...</div>
+      <div *ngIf="!isQuoteLoading">
+        <p>Purchase Price: ₹{{ selectedTxn?.purchaseprice }}</p>
+        <p>Current Price: {{ selectedQuote.currentPrice }}</p>
+        <p>Open Price: {{ selectedQuote.openPrice }}</p>
+        <p>Gain/Loss: {{ selectedQuote.gainLoss }}</p>
+        <p>Gain/Loss %: {{ selectedQuote.gainLossPercentage | percent:'1.2-2' }}</p>
+        <button (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </main>
+</div>
+ 
+ 
+ 
+ 

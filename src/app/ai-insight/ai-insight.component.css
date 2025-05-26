@@ -1,0 +1,14 @@
+ai-insight.css
+ 
+.holdings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2471a3;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #d1d5db;
+  }
+ 

@@ -1,0 +1,30 @@
+<div class="chat-popup-overlay" (click)="onClose()"></div>
+<div class="chat-popup">
+  <div class="chat-header">
+    <span>FinTrack AI Assistant</span>
+    <button class="close-btn" (click)="onClose()">&times;</button>
+  </div>
+  <div class="chat-body">
+    <div *ngFor="let msg of messages" [ngClass]="msg.sender">
+      <div class="chat-bubble">{{ msg.text }}</div>
+    </div>
+    <div *ngIf="loading" class="loading-msg">
+      <span class="loader"></span> FinTrack AI is thinking...
+    </div>
+    <div *ngIf="error" class="error-msg">{{ error }}</div>
+  </div>
+  <form class="chat-input-row" (ngSubmit)="sendMessage()">
+    <input
+      type="text"
+      [(ngModel)]="userInput"
+      name="userInput"
+      placeholder="Ask a finance or portfolio question..."
+      [disabled]="loading"
+      autocomplete="off"
+      required
+    />
+    <button type="submit" [disabled]="loading || !userInput.trim()">Send</button>
+  </form>
+</div>
+ 
+ 

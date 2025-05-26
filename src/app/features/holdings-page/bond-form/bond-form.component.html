@@ -1,0 +1,95 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>Transaction Type</label>
+  <select formControlName="transactionType">
+    <option value="Buy">Buy</option>
+    <option value="Sell">Sell</option>
+  </select>
+
+  <!-- <label>Fixed Income Name</label>
+  <input formControlName="fixedIncomeName" type="text" /> -->
+     
+<label>Fixed Income Name</label>
+<div style="position: relative; display: inline-block; width: 100%;">
+<input
+  formControlName="fixedIncomeName"
+  type="text"
+  (focus)="onFixedIncomeFocus()"
+  (blur)="hideDropdownLater()"
+  autocomplete="off"
+  style="width: 100%;"
+/>
+
+<ul
+  *ngIf="showDropdown && filteredNames.length > 0"
+  style="
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%;  /* <-- ensures dropdown is right below input */
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 1000;
+    list-style-type: none;
+  "
+>
+  <li
+    *ngFor="let name of filteredNames"
+    (mousedown)="selectName(name)"
+    style="padding: 5px; cursor: pointer;"
+  >
+    {{ name }}
+  </li>
+</ul>
+</div>
+
+
+  <label>Investment Date</label>
+  <input formControlName="investmentDate" type="date" />
+
+  <label>Investment Amount</label>
+  <input formControlName="investmentAmount" type="number" />
+
+  <label>Coupon Rate (% p.a.)</label>
+  <input formControlName="couponRate" type="number" />
+
+  <label>Compounding Frequency</label>
+  <select formControlName="compoundingFrequency">
+    <option value="Monthly">Monthly</option>
+    <option value="Quarterly">Quarterly</option>
+    <option value="Half-Yearly">Half-Yearly</option>
+    <option value="Yearly">Yearly</option>
+    <option value="On Maturity">On Maturity</option>
+  </select>
+
+  <label>Interest Type</label>
+  <select formControlName="interestType">
+    <option value="Accrued">Accrued</option>
+    <option value="Interest Payout">Interest Payout</option>
+  </select>
+
+  <label>Maturity Date</label>
+  <input formControlName="maturityDate" type="date" />
+
+  <!-- Show these only for Sell -->
+<ng-container *ngIf="form.get('transactionType')?.value === 'Sell'">
+  <label>Sell Date</label>
+  <input formControlName="sellDate" type="date" />
+  <div *ngIf="form.get('sellDate')?.touched && form.get('sellDate')?.hasError('required')" class="error">
+    Sell Date is required.
+  </div>
+
+  <label>Sell Price</label>
+  <input formControlName="sellPrice" type="number" />
+  <div *ngIf="form.get('sellPrice')?.touched && form.get('sellPrice')?.hasError('required')" class="error">
+    Sell Price is required.
+  </div>
+</ng-container>
+
+  <button type="submit" [disabled]="form.invalid">Save</button>
+  <button type="button" (click)="cancel.emit()">Cancel</button>
+</form>
+

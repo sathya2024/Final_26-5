@@ -1,0 +1,399 @@
+<header class="fintrack-header">
+  <div class="header-left">
+    <img
+      src="assets/images/logo2.png"
+      alt="FinTrack Logo"
+      class="fintrack-logo logo-secondary"
+    />
+  </div>
+ 
+  <div class="header-right">
+   
+    <img
+      src="assets/images/mphasis_logo.png"
+      alt="FinTrack Logo"
+      class="fintrack-logo logo-main"
+    /> <div class="user-initial">S</div>
+  </div>
+</header>
+ 
+<main class="fintrack-main">
+  <app-investment-modal
+    *ngIf="showInvestmentModal"
+    [isEditMode]="editMode"
+    [data]="selectedInvestment"
+    [selectedType]="selectedType"
+    (closeModal)="closeInvestmentModal()"
+    (save)="handleInvestmentSave($event)"
+  >
+  </app-investment-modal>
+  <app-delete-confirmation-modal
+    *ngIf="showDeleteConfirm"
+    (confirm)="deleteInvestment()"
+    (cancel)="showDeleteConfirm = false"
+  >
+  </app-delete-confirmation-modal>
+  <div class="holdings-title-row">
+    <h2>Holdings Summary</h2>
+  </div>
+ 
+ 
+  <div *ngIf="loading" class="loading-indicator">Loading investments...</div>
+ 
+  <div *ngIf="!loading && error" class="error-message">
+    {{ error }}
+  </div>
+ 
+  <div
+    *ngIf="!loading && !error && investments.length === 0"
+    class="empty-state"
+  >
+    <p>No investments found. Click "Add Investment" to get started.</p>
+  </div>
+ 
+ 
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-label">Current Value</div>
+      <div class="summary-value">$
+{{ totalInvestmentValue.toFixed(2) }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Invested Value</div>
+      <div class="summary-value">$
+{{ totalInvestmentCost.toFixed(2) }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Total Gain/Loss Percentage</div>
+      <div class="summary-value" [ngClass]="{
+          'text-success': totalGainLossPercentage > 0,
+          'text-danger': totalGainLossPercentage < 0
+        }">
+        {{ totalGainLossPercentage.toFixed(2) }}%
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Total Gain/Loss</div>
+      <div class="summary-value" [ngClass]="{
+          'text-success': totalGainLoss > 0,
+          'text-danger': totalGainLoss < 0
+        }">
+        $
+{{ totalGainLoss.toFixed(2) }}
+      </div>
+    </div>
+  </div>
+ 
+ 
+  <div class="nav-buttons">
+    <button class="nav-btn" (click)="goToDashboard()">Dashboard</button>
+    <button class="nav-btn" (click)="goToHoldings()">Holdings</button>
+    <button class="nav-btn" (click)="goToTransactions()">Transactions</button>
+  </div>
+ 
+  <!-- Navigation Tabs -->
+  <div class="fintrack-tabs">
+    <a class="tab-link"
+       [ngClass]="{active: activeTab === 'all'}"
+       (click)="setTab('all')">All Holdings</a>
+    <a class="tab-link"
+       [ngClass]="{active: activeTab === 'stock'}"
+       (click)="setTab('stock')">Stocks</a>
+    <a class="tab-link"
+       [ngClass]="{active: activeTab === 'bond'}"
+       (click)="setTab('bond')">Bonds</a>
+    <div class="tab-spacer"></div>
+    <a class="tab-link export-btn" (click)="updateCurrentPrices()">
+      <i class="fas fa-sync-alt"></i> Update
+    </a>
+  <div class="button-wrapper">
+    <button class="tab-link export-btn" (click)="openAddInvestmentModal()">
+      <i class="fas fa-plus"></i> Add Investment
+    </button>
+   
+  </div>
+ 
+    <a class="tab-link export-btn" (click)="exportToExcel()">
+      <i class="fas fa-file-excel"></i> Export to Excel
+    </a>
+    <button class="tab-link export-btn" (click)="openChatPopup()">
+      <i class="fas fa-comments"></i> Ask FinTrack AI
+    </button>
+  </div>
+ 
+  <div class="search-bar-wrapper">
+    <input
+      type="text"
+      class="search-input"
+      [(ngModel)]="searchText"
+      placeholder="Search by symbol or name..."
+    />
+    <button class="tab-link export-btn search-btn" (click)="searchText = searchText.trim()">
+      <i class="fas fa-search"></i> Search
+    </button>
+  </div>
+ 
+  <br />
+  <div *ngIf="!loading && userId === null" class="debug-message">
+    <p>Warning: No user ID available. Please make sure you're logged in.</p>
+  </div>
+ 
+  <div class="holdings-table-container">
+   
+    <table class="holdings-table">
+      <thead>
+        <tr>
+          <th (click)="setSort('Symbol')">
+            Symbol
+            <span *ngIf="sortColumn === 'Symbol'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Type')">
+            Type
+            <span *ngIf="sortColumn === 'Type'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Quantity')">
+            Quantity
+            <span *ngIf="sortColumn === 'Quantity'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Purchase Price')">
+            Purchase Price
+            <span *ngIf="sortColumn === 'Purchase Price'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Purchase Date')">
+            Purchase Date
+            <span *ngIf="sortColumn === 'Purchase Date'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Current Price')">
+            Current Price
+            <span *ngIf="sortColumn === 'Current Price'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Current Value')">
+            Current Value
+            <span *ngIf="sortColumn === 'Current Value'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Gain/Loss')">
+            Gain/Loss
+            <span *ngIf="sortColumn === 'Gain/Loss'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th (click)="setSort('Gain/Loss %')">
+            %
+            <span *ngIf="sortColumn === 'Gain/Loss %'">
+              <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+              <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+            </span>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+     
+      <tbody>
+        <tr *ngFor="let inv of filteredInvestments | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }">
+          <!-- symbol -->
+          <td>
+            {{ inv.stockName || inv.fixedIncomeName || 'N/A' }}
+          </td>
+          <!-- type  -->
+          <td>
+            <span class="type-badge" [ngClass]="{
+                'type-stock': inv.type === 'Stock',
+                'type-bond': inv.type === 'Bond',
+              }">
+              {{ inv.type }}
+            </span>
+          </td>
+          <!-- qty -->
+          <td>
+            <ng-container [ngSwitch]="inv.type">
+              <span *ngSwitchCase="'Stock'">{{ inv.numberOfShares }}</span>
+              <span *ngSwitchCase="'Bond'">1</span>
+              <span *ngSwitchDefault>-</span>
+            </ng-container>
+          </td>
+         
+          <!-- purchase price -->
+          <td>
+            <ng-container [ngSwitch]="inv.type">
+              <span *ngSwitchCase="'Stock'">
+{{ inv.purchasePrice?.toFixed(2) || 'NA'}}</span>
+              <span *ngSwitchCase="'Bond'">
+                {{
+                inv.investmentAmount
+                ? + inv.investmentAmount.toFixed(2)
+                : "-"
+                }}
+              </span>
+              <span *ngSwitchDefault>-</span>
+            </ng-container>
+          </td>
+          <!-- date -->
+          <td>
+            {{ inv.purchaseDate || inv.date || inv.investmentDate | date: 'dd-MM-yyyy' }}
+          </td>
+          <!-- current price -->
+          <td>
+            <ng-container [ngSwitch]="inv.type">
+              <span *ngSwitchCase="'Stock'">
+{{ inv.currentPrice?.toFixed(2) || 'N/A' }}</span>
+              <span *ngSwitchCase="'Bond'">
+{{ inv.currentPrice?.toFixed(2) || 'N/A' }}</span>
+              <span *ngSwitchDefault>-</span>
+            </ng-container>
+          </td>
+          <td>
+            <!-- current value -->
+            <ng-container [ngSwitch]="inv.type">
+              <span *ngSwitchCase="'Stock'">
+               
+{{
+                (inv.currentValue?.toFixed(2) || 'N/A' )
+                }}
+              </span>
+              <span *ngSwitchCase="'Bond'">
+               
+{{
+                  (inv.currentValue?.toFixed(2) || 'N/A' )
+                  }}
+              </span>
+              <span *ngSwitchDefault>-</span>
+            </ng-container>
+          </td>
+         
+ 
+          <!-- gain/loss -->
+          <td>
+            <ng-container [ngSwitch]="inv.type">
+              <span *ngSwitchCase="'Stock'" [ngClass]="{
+                    'text-success': inv.gainLoss > 0,
+                    'text-danger': inv.gainLoss < 0
+                  }">
+               
+{{ inv.gainLoss?.toFixed(2) || 'N/A' }}
+              </span>
+             
+              <span *ngSwitchCase="'Bond'" [ngClass]="{
+                    'text-success': inv.gainLoss > 0,
+                    'text-danger': inv.gainLoss < 0
+                  }">
+               
+{{ inv.gainLoss?.toFixed(2) || 'N/A' }}
+              </span>
+              <span *ngSwitchDefault>-</span>
+            </ng-container>
+          </td>
+          <!-- gain loss percentage -->
+          <td>
+            <ng-container [ngSwitch]="inv.type">
+              <span *ngSwitchCase="'Stock'" [ngClass]="{
+                    'text-success': inv.gainLossPercentage > 0,
+                    'text-danger': inv.gainLossPercentage < 0
+                  }">
+                {{ inv.gainLossPercentage?.toFixed(2) || 'N/A' }}%
+              </span>
+ 
+             
+              <span *ngSwitchCase="'Bond'" [ngClass]="{
+                    'text-success': inv.gainLossPercentage > 0,
+                    'text-danger': inv.gainLossPercentage < 0
+                  }">
+                {{ inv.gainLossPercentage?.toFixed(2) || 'N/A' }}%
+              </span>
+              <span *ngSwitchDefault>-</span>
+            </ng-container>
+          </td>
+          <!-- actions -->
+          <td>
+            <div class="action-buttons">
+              <button class="btn-edit" (click)="openEditInvestmentModal(inv)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+ 
+              <button class="btn-delete" (click)="confirmDelete(inv)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <!-- Total Row -->
+        <tr class="total-row">
+          <td>Total</td>
+          <td></td>
+          <td> {{ totalQuantity }}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+{{ totalInvestmentValue.toFixed(2) }}</td>
+          <td [ngClass]="{
+            'text-success': totalGainLoss > 0,
+            'text-danger': totalGainLoss < 0
+          }">
+           
+{{ totalGainLoss.toFixed(2) }}
+          </td>
+          <td [ngClass]="{
+        'text-success': totalGainLossPercentage > 0,
+        'text-danger': totalGainLossPercentage < 0
+      }">
+            {{ totalGainLossPercentage.toFixed(2) }}%
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination-container">
+    <div class="items-per-page">
+      <label>
+        Rows per page:
+        <select [(ngModel)]="itemsPerPage" class="items-select" (change)="currentPage = 1">
+          <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+        </select>
+      </label>
+    </div>
+    <div class="pagination-controls">
+      <pagination-controls
+        (pageChange)="currentPage = $event"
+        [autoHide]="true"
+        class="custom-pagination">
+      </pagination-controls>
+    </div>
+    <div class="page-info">
+      {{ getPageInfo() }}
+    </div>
+   
+  </div>
+  <app-ai-chat-popup
+  *ngIf="showChatPopup"
+  [userId]="userId"
+  (close)="showChatPopup = false">
+</app-ai-chat-popup>
+ 
+</main>
+ 
+ 
+ 
+ 

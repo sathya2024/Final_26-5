@@ -1,0 +1,25 @@
+<div class="container mt-4">
+      <h4 class="holdings-header">Select a Stock to Get Advice 📊</h4>
+ 
+      <select class="form-select mb-3" [(ngModel)]="selectedStockName">
+        <option value="" disabled selected>Select your investment</option>
+        <option *ngFor="let stock of stockInvestments" [value]="stock.stockName">
+          {{ stock.stockName }}
+        </option>
+      </select>
+ 
+      <button class="btn btn-primary" (click)="getAdvice()">Get Suggestion</button>
+ 
+      <div *ngIf="loading" class="mt-3 text-info">Fetching advice...</div>
+      <div *ngIf="error" class="mt-3 text-danger">{{ error }}</div>
+      <div *ngIf="advice" class="mt-3 p-3 border rounded bg-light">
+        <div [innerText]="displayAdvice" style="white-space: pre-wrap; font-family: inherit;"></div>
+     
+        <button class="btn btn-link p-0 mt-2" (click)="toggleAdviceView()">
+          {{ showFullAdvice ? 'Show Less ▲' : 'Read More ▼' }}
+        </button>
+      </div>
+     
+     
+    </div>
+ 

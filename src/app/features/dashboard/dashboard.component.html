@@ -1,0 +1,428 @@
+<div class="dashboard-container">
+ 
+  <header class="dashboard-header">
+    <div class="header-row">
+      <div class="logo-title">
+        <img [src]="logoPath" alt="Fintrack Logo" class="fintrack-logo" />
+      </div>
+      <div class="header-actions">
+        <img
+          src="assets/images/mphasis_logo.png"
+          alt="FinTrack Logo"
+          class="fintrack-logo logo-main"
+        />
+        <!-- <button class="btn-logout" (click)="logout()">Logout</button> -->
+        <div class="user-initial">{{ userInitial }}</div>
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          <!-- ▼ -->
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li>
+            <button class="dropdown-item" (click)="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+ 
+  <main class="dashboard-main">
+    <div class="holdings-title-row">
+      <h2>Holdings Summary</h2>
+    </div>
+ 
+    <!-- Portfolio Summary Cards -->
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-title">Total Value</div>
+        <div class="summary-value">$
+          {{ totalInvestmentValue.toFixed(2) }}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-title">Total Cost</div>
+        <div class="summary-value">$
+          {{ totalInvestmentCost.toFixed(2) }}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-title"> Total Gain/Loss Percentage</div>
+        <div class="summary-value percent" [ngClass]="{
+            gain: totalGainLossPercentage >= 0,
+            loss: totalGainLossPercentage < 0
+          }">
+          {{ totalGainLossPercentage.toFixed(2) }}%
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-title">Total Gain/Loss</div>
+        <div class="summary-value gain" *ngIf="totalGainLoss >= 0">
+          $
+          {{ totalGainLoss.toFixed(2) }}
+        </div>
+        <div class="summary-value loss" *ngIf="totalGainLoss < 0">
+          $
+          {{ totalGainLoss.toFixed(2) }}
+        </div>
+      </div>
+     
+    </div>
+ 
+    <div class="main-row">
+      <!-- Top Holdings Table -->
+      <div class="holdings-card">
+        <div class="holdings-header">
+          <span>Top Holdings</span>
+          <button class="btn-view-all" [routerLink]="['/holdings']">
+            View All
+          </button>
+          <button class="btn-view-all" (click)="openAIInsightModal()">Get Advice</button>
+          <!-- <button class="btn-view-all" (click)="showInsight()">View Insights</button> -->
+        </div>
+        <table class="holdings-table">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Quantity</th>
+              <th>Purchase Price</th>
+              <th>Current Price</th>
+              <th>Current Value</th>
+              <th>Gain/Loss</th>
+              <th>%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let inv of topHoldings">
+              <span
+    class="ticker-symbol"
+    (mouseenter)="showNewsTooltip(inv.symbol || inv.stockName, $event)"
+    (mousemove)="newsTooltipVisible && (newsTooltipPosition = {x: $event.clientX + 10, y: $event.clientY + 10})"
+    (mouseleave)="hideNewsTooltip()"
+    style="cursor: pointer; color: #1976d2;"
+  >
+  <td>
+    <b>
+      {{
+      inv.symbol ||
+      inv.stockName ||
+      inv.fixedIncomeName ||
+      inv.schemeName ||
+      inv.securityName ||
+      "-"
+      }}
+    </b>
+  </td>
+  </span>
+              <!-- Symbol -->
+             
+              <!-- Quantity -->
+              <td>
+                <ng-container [ngSwitch]="inv.type">
+                  <!-- stocks -->
+                  <span *ngSwitchCase="'Stock'">
+                    {{ inv.numberOfShares || 1 }}
+                  </span>
+                  <!-- Mutual Funds -->
+                  <span *ngSwitchCase="'MutualFund'">
+                    {{
+                    inv.amountType === "Rupees"
+                    ? inv.amount && inv.price
+                    ? (inv.amount / inv.price).toFixed(2)
+                    : "1"
+                    : inv.amount || 1
+                    }}
+                  </span>
+ 
+                  <!-- Bonds -->
+                  <span *ngSwitchCase="'Bond'">
+                    {{ inv.units || 1 }}
+                  </span>
+                  <!-- Default -->
+                  <span *ngSwitchDefault>
+                    {{ inv.quantity || 1 }}
+                  </span>
+                </ng-container>
+              </td>
+              <!-- Purchase Price -->
+              <td>
+                <ng-container [ngSwitch]="inv.type">
+                  <span *ngSwitchCase="'Stock'">
+                    ${{
+                    inv.purchasePrice
+                    ? inv.purchasePrice.toFixed(2)
+                    : inv.price
+                    ? inv.price.toFixed(2)
+                    : "0.00"
+                    }}
+                  </span>
+                  <span *ngSwitchCase="'MutualFund'">
+                    ${{ inv.price ? inv.price.toFixed(2) : "0.00" }}
+                  </span>
+ 
+                  <span *ngSwitchCase="'Bond'">
+                    ${{
+                    inv.price
+                    ? inv.price.toFixed(2)
+                    : inv.investmentAmount
+                    ? inv.investmentAmount.toFixed(2)
+                    : "0.00"
+                    }}
+                  </span>
+                  <span *ngSwitchDefault>
+                    ${{ inv.price ? inv.price.toFixed(2) : "0.00" }}
+                  </span>
+                </ng-container>
+              </td>
+              <!-- Current Price -->
+              <td>
+                <ng-container [ngSwitch]="inv.type">
+                  <span *ngSwitchCase="'Stock'">$
+                    {{ inv.currentPrice?.toFixed(2) || 'N/A' }}</span>
+                  <span *ngSwitchCase="'MutualFund'">$
+                    {{ inv.currentPrice?.toFixed(2) || 'N/A' }}</span>
+ 
+                  <span *ngSwitchCase="'Bond'">$
+                    {{ inv.currentPrice?.toFixed(2) || 'N/A' }}</span>
+                  <span *ngSwitchDefault>-</span>
+                </ng-container>
+              </td>
+              <!-- Current value -->
+              <td>
+                <ng-container [ngSwitch]="inv.type">
+                  <span *ngSwitchCase="'Stock'">
+                    $
+                    {{
+                    (inv.currentValue?.toFixed(2) || 'N/A' )
+                    }}
+                  </span>
+                  <span *ngSwitchCase="'MutualFund'">
+                    $
+                    {{
+                    (inv.currentValue?.toFixed(2) || 'N/A' )
+                    }}
+                  </span>
+ 
+                  <span *ngSwitchCase="'Bond'">
+                    $
+                    {{
+                    (inv.currentValue?.toFixed(2) || 'N/A' )
+                    }}
+                  </span>
+                  <span *ngSwitchDefault>-</span>
+                </ng-container>
+              </td>
+              <!-- Gain/Loss -->
+              <td>
+                <ng-container [ngSwitch]="inv.type">
+                  <span *ngSwitchCase="'Stock'" [ngClass]="{
+                        'text-success': inv.gainLoss > 0,
+                        'text-danger': inv.gainLoss < 0
+                      }">
+                    $
+                    {{ inv.gainLoss?.toFixed(2) || 'N/A' }}
+                  </span>
+                  <span *ngSwitchCase="'MutualFund'" [ngClass]="{
+                        'text-success': inv.gainLoss > 0,
+                        'text-danger': inv.gainLoss < 0
+                      }">
+                    $
+                    {{ inv.gainLoss?.toFixed(2) || 'N/A' }}
+                  </span>
+ 
+                  <span *ngSwitchCase="'Bond'" [ngClass]="{
+                        'text-success': inv.gainLoss > 0,
+                        'text-danger': inv.gainLoss < 0
+                      }">
+                    $
+                    {{ inv.gainLoss?.toFixed(2) || 'N/A' }}
+                  </span>
+                  <span *ngSwitchDefault>-</span>
+                </ng-container>
+              </td>
+              <!-- gain loss percentage -->
+              <td>
+                <ng-container [ngSwitch]="inv.type">
+                  <span *ngSwitchCase="'Stock'" [ngClass]="{
+                        'text-success': inv.gainLossPercentage > 0,
+                        'text-danger': inv.gainLossPercentage < 0
+                      }">
+                    {{ inv.gainLossPercentage?.toFixed(2) || 'N/A' }}%
+                  </span>
+                  <span *ngSwitchCase="'MutualFund'" [ngClass]="{
+                        'text-success': inv.gainLossPercentage > 0,
+                        'text-danger': inv.gainLossPercentage < 0
+                      }">
+                    {{ inv.gainLossPercentage?.toFixed(2) || 'N/A' }}%
+                  </span>
+ 
+                  <span *ngSwitchCase="'Bond'" [ngClass]="{
+                        'text-success': inv.gainLossPercentage > 0,
+                        'text-danger': inv.gainLossPercentage < 0
+                      }">
+                    {{ inv.gainLossPercentage?.toFixed(2) || 'N/A' }}%
+                  </span>
+                  <span *ngSwitchDefault>-</span>
+                </ng-container>
+              </td>
+              <div
+              *ngIf="newsTooltipVisible"
+              class="news-tooltip"
+              [style.left.px]="newsTooltipPosition.x"
+              [style.top.px]="newsTooltipPosition.y"
+            >
+              <div *ngIf="newsTooltipLoading">Loading news...</div>
+              <div *ngIf="newsTooltipError">{{ newsTooltipError }}</div>
+              <ng-container *ngIf="!newsTooltipLoading && !newsTooltipError">
+                <div *ngIf="newsTooltipNews.length === 0">No recent news found.</div>
+                <div *ngFor="let news of newsTooltipNews | slice:0:3">
+                  <a [href]="news.url" target="_blank" style="font-weight:bold;">{{ news.headline }}</a>
+                  <div style="font-size:12px; color: #555;">{{ news.source }} | {{ news.dateTime | date:'short' }}</div>
+                  <div style="font-size:13px; margin-bottom: 8px;">{{ news.summary }}</div>
+                </div>
+              </ng-container>
+            </div>
+ 
+            </tr>
+          </tbody>
+        </table>
+      </div>
+ 
+      <!-- Quick Actions -->
+      <div class="quick-actions-card">
+        <div class="quick-actions-title">Quick Actions
+          <hr>
+          <button class="btn-scorecard" (click)="loadPortfolioScorecard()" >
+            <i class="fas fa-star"></i> View HealthScore
+          </button>
+       
+        <button class="btn-holdings" [routerLink]="['/holdings']" >
+          <i class="fas fa-chart-bar"></i> View Holdings
+        </button>
+        <button class="btn-transactions" [routerLink]="['/transactions']" >
+          <i class="fas fa-clipboard"></i> Transactions
+        </button>
+      </div>
+      </div>
+     
+    </div>
+ 
+    <!-- Charts Section -->
+    <div class="charts-row">
+ 
+      <!-- Asset Allocation Chart Card -->
+      <div class="chart-card">
+        <div class="chart-title">Asset Allocation</div>
+        <div class="chart-canvas-wrapper">
+          <canvas id="assetAllocationChart"></canvas>
+        </div>
+      </div>
+ 
+      <!-- Investment Type Chart Card -->
+      <div class="chart-card">
+        <div class="chart-title">Investment Type</div>
+        <div class="chart-canvas-wrapper">
+          <canvas id="investmentTypeChart"></canvas>
+        </div>
+      </div>
+    </div>
+ 
+ 
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">Performance (Gain/Loss per Investment)</h5>
+      </div>
+      <div class="chart-container1">
+        <canvas id="performanceChart"></canvas>
+      </div>
+    </div>
+ 
+  </main><!-- Insight Modal -->
+  <div class="modal fade" id="insightModal" tabindex="-1" aria-labelledby="insightModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="insightModalLabel">Investment Insights</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {{ insightText }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+<!-- Scorecard Modal -->
+<div class="modal fade" id="scorecardModal" tabindex="-1" aria-labelledby="scorecardModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scorecardModalLabel">Portfolio Scorecard</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="scorecardLoading" class="text-center p-3">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div *ngIf="scorecardError" class="alert alert-danger">
+          {{ scorecardError }}
+        </div>
+        <div *ngIf="portfolioHealth && !scorecardLoading" class="scorecard-content">
+          <div class="scorecard-score text-center mb-3">
+            <span class="score-value" [ngClass]="{
+              'score-excellent': portfolioHealth.healthScore >= 80,
+              'score-good': portfolioHealth.healthScore >= 60 && portfolioHealth.healthScore < 80,
+              'score-average': portfolioHealth.healthScore >= 40 && portfolioHealth.healthScore < 60,
+              'score-poor': portfolioHealth.healthScore < 40
+            }">{{ portfolioHealth.healthScore }}</span>
+            <div class="score-label">Score (0-100)</div>
+          </div>
+          <div class="scorecard-metrics mb-3">
+            <div><b>Risk Level:</b> {{ portfolioHealth.riskLevel }}</div>
+            <div><b>Diversification:</b> {{ portfolioHealth.diversificationScore }}</div>
+          </div>
+          <div class="scorecard-recommendations">
+            <b>Recommendations:</b>
+            <ul class="scorecard-recommendations">
+              <li *ngFor="let rec of portfolioHealth.recommendations">
+                <i class="fas fa-lightbulb text-warning"></i> {{ rec }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div *ngIf="!portfolioHealth && !scorecardLoading && !scorecardError" class="text-center p-3">
+          <p>No scorecard available. Click refresh to analyze your portfolio.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- AI Insight Modal -->
+<div class="modal fade" id="aiInsightModal" tabindex="-1" aria-labelledby="aiInsightModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg"><!-- optional larger size -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="aiInsightModalLabel">Investment Advice</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <app-ai-insight id="aiInsightSection"></app-ai-insight>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+ 
+</div>
+ 
+<!-- <app-ai-insight id="aiInsightSection"></app-ai-insight> -->
+ 

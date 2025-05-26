@@ -1,0 +1,52 @@
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: auto;
+}
+ 
+label {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+ 
+button {
+  margin-top: 10px;
+}
+ 
+ 
+ 
+.register-container {
+  min-height: 90vh;
+}
+ 
+.register-image {
+  max-height: 600px;
+  border-radius: 3%;
+}
+ 
+.register-card {
+  max-width: 490px;
+  width: 100%;
+  margin: auto;
+  margin-bottom: 85px;
+  padding: 1.5rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+ 
+.register-heading {
+  color: #004c6a;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+}
+ 
+.strength-meter {
+  height: 6px;
+}
+ 
+.progress-bar {
+  transition: width 0.4s ease;
+}
+ 
+ 
